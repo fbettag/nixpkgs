@@ -1,22 +1,16 @@
-{
-  lib,
-  stdenvNoCC,
-  fetchurl,
-  appimageTools,
-  makeWrapper,
-  writeScript,
-}:
+{ lib, stdenvNoCC, fetchurl, appimageTools, makeWrapper, writeScript }:
+
 let
   pname = "cursor";
   version = "0.42.3";
   appKey = "230313mzl4w4u92";
   src = fetchurl {
-    url = "https://download.todesktop.com/230313mzl4w4u92/cursor-0.42.3-build-241016kxu9umuir-x86_64.AppImage";
+    url =
+      "https://download.todesktop.com/230313mzl4w4u92/cursor-0.42.3-build-241016kxu9umuir-x86_64.AppImage";
     hash = "sha256-GWkilBlpXube//jbxRjmKJjYcmB42nhMY8K0OgkvtwA=";
   };
   appimageContents = appimageTools.extractType2 { inherit version pname src; };
-in
-stdenvNoCC.mkDerivation {
+in stdenvNoCC.mkDerivation {
   inherit pname version;
 
   src = appimageTools.wrapType2 { inherit version pname src; };

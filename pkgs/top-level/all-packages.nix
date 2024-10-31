@@ -4491,6 +4491,8 @@ with pkgs;
 
   cpulimit = callPackage ../tools/misc/cpulimit { };
 
+  inherit (callPackage ../by-name/co/code-cursor { }) code-cursor;
+
   code-minimap = callPackage ../tools/misc/code-minimap { };
 
   codesearch = callPackage ../tools/text/codesearch { };
