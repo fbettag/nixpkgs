@@ -33864,7 +33864,7 @@ with pkgs;
 
   ledger-agent = with python3Packages; toPythonApplication ledger-agent;
 
-  ledger-live-desktop = callPackage ../applications/blockchains/ledger-live-desktop { };
+  inherit (callPackage ../applications/blockchains/ledger-live-desktop { }) ledger-live-desktop;
 
   lightning-loop = callPackage ../applications/blockchains/lightning-loop { };
 
