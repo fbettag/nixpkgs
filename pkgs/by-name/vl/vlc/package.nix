@@ -85,6 +85,7 @@
 , writeShellScript
 , xcbutilkeysyms
 , zlib
+, darwin
 
 , chromecastSupport ? true
 , jackSupport ? false
@@ -92,6 +93,7 @@
 , skins2Support ? !onlyLibVLC
 , waylandSupport ? true
 , withQt5 ? true
+, withCocoa ? false
 }:
 
 # chromecastSupport requires TCP port 8010 to be open for it to work.
@@ -132,7 +134,6 @@ stdenv.mkDerivation (finalAttrs: {
     SDL
     SDL_image
     a52dec
-    alsa-lib
     avahi
     dbus
     faad2
@@ -166,7 +167,6 @@ stdenv.mkDerivation (finalAttrs: {
     libopus
     libplacebo_5
     libpulseaudio
-    libraw1394
     librsvg
     libsamplerate
     libspatialaudio
@@ -191,6 +191,7 @@ stdenv.mkDerivation (finalAttrs: {
     xcbutilkeysyms
     zlib
   ]
+  ++ optionals (stdenv.hostPlatform.isLinux) [ alsa-lib libraw1394 ]
   ++ optionals (!stdenv.hostPlatform.isAarch && !onlyLibVLC) [ live555 ]
   ++ optionals jackSupport [ libjack2 ]
   ++ optionals chromecastSupport [ libmicrodns protobuf ]
@@ -206,7 +207,8 @@ stdenv.mkDerivation (finalAttrs: {
     qtsvg
     qtx11extras
   ])
-  ++ optionals (waylandSupport && withQt5) [ libsForQt5.qtwayland ];
+  ++ optionals (waylandSupport && withQt5) [ libsForQt5.qtwayland ]
+  ++ optionals (stdenv.hostPlatform.isDarwin && withCocoa) [ darwin.apple_sdk.frameworks.Cocoa ];
 
   env = {
     # vlc depends on a c11-gcc wrapper script which we don't have so we need to
@@ -259,7 +261,8 @@ stdenv.mkDerivation (finalAttrs: {
     "--enable-sout"
     "--enable-chromecast"
     "--enable-microdns"
-  ];
+  ]
+  ++ optionals (stdenv.hostPlatform.isDarwin && withCocoa) [ "--enable-cocoa" ];
 
   # Remove runtime dependencies on libraries
   postConfigure = ''
@@ -306,7 +309,7 @@ stdenv.mkDerivation (finalAttrs: {
     homepage = "https://www.videolan.org/vlc/";
     license = lib.licenses.lgpl21Plus;
     maintainers = with lib.maintainers; [ AndersonTorres alois31 ];
-    platforms = lib.platforms.linux;
+    platforms = lib.platforms.darwin ++ lib.platforms.linux;
     mainProgram = "vlc";
   };
 })
